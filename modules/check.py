@@ -3,87 +3,118 @@ import send
 
 
 def user(
-    players,
-    serverToken,
-    clientToken,
-    steam_ids,
-    filtres,
-    meId,
-    blacklist,
-    data,
-    proxy=None,
-):
-    while not players.empty():
-        player = players.get()
+        players: dict, serverToken: str,
+        clientToken: str, steam_ids: list, filtres: dict,
+        meId: str, blacklist: bool, data: dict, proxy: str) -> None:
+
+    price: float = 0.00
+
+    while players:
+        player: dict = players.get()
+
         try:
-            if proxy == None:
-                userInfo = userInfo(serverToken, player["id"])
+            if proxy:
+                userInfo: dict = get.userInfo(
+                    token=serverToken,
+                    facitId=player["id"],
+                    proxy=proxy
+                )
             else:
-                userInfo = userInfo(serverToken, player["id"], proxy)
+                userInfo: dict = get.userInfo(
+                    token=serverToken, 
+                    facitId=player["id"], 
+                    proxy=proxy,
+                )
+
             if userInfo["steam_id_64"] not in blacklist:
-                sendFrendRequestVal = False
-                if not filtres["price"]["work"] and not filtres["level"]["work"]:
-                    sendFrendRequestVal = True
+                sendFrendRequestVal: bool = False
+                if (not filtres["price"]["work"]
+                        and not filtres["level"]["work"]):
+                    sendFrendRequestVal: bool = True
+
                 if filtres["level"]["work"]:
-                    if (
-                        int(filtres["level"]["from"])
-                        <= int(userInfo["games"]["csgo"]["skill_level"])
-                        <= int(filtres["level"]["to"])
-                    ):
-                        sendFrendRequestVal = True
-                price = ""
+                    if (int(filtres["level"]["from"])
+                            <= int(userInfo["games"]["csgo"]["skill_level"])
+                            <= int(filtres["level"]["to"])):
+                        sendFrendRequestVal: bool = True
+
                 if filtres["price"]["work"]:
                     if filtres["level"]["work"]:
                         if sendFrendRequestVal:
                             try:
-                                if proxy == None:
-                                    price = get.inventoryPrice(
-                                        userInfo["steam_id_64"], data
+                                if proxy:
+                                    price: float = get.inventoryPrice(
+                                        steemId=userInfo["steam_id_64"],
+                                        data=data,
+                                        proxy=proxy,
                                     )
                                 else:
-                                    price = get.inventoryPrice(
-                                        userInfo["steam_id_64"], data, proxy
+                                    price: float = get.inventoryPrice(
+                                        steemId=userInfo["steam_id_64"],
+                                        data=data,
+                                        proxy=None,
                                     )
-                                if (
-                                    int(filtres["price"]["from"])
-                                    <= int(price)
-                                    <= int(filtres["price"]["to"])
-                                ):
-                                    sendFrendRequestVal = True
+
+                                if (int(filtres["price"]["from"])
+                                        <= int(price)
+                                        <= int(filtres["price"]["to"])):
+                                    sendFrendRequestVal: bool = True
                                 else:
-                                    sendFrendRequestVal = False
-                            except Exception as ex:
-                                sendFrendRequestVal = False
+                                    sendFrendRequestVal: bool = False
+
+                            except Exception:
+                                sendFrendRequestVal: bool = False
+
                     else:
                         try:
-                            if proxy == None:
-                                price = get.inventoryPrice(userInfo["steam_id_64"], data)
-                            else:
-                                price = get.inventoryPrice(
-                                    userInfo["steam_id_64"], data, proxy
+                            if proxy:
+                                price: float = get.inventoryPrice(
+                                    steemId=userInfo["steam_id_64"],
+                                    data=data,
+                                    proxy=proxy,
                                 )
-                            if (
-                                int(filtres["price"]["from"])
-                                <= int(price)
-                                <= int(filtres["price"]["to"])
-                            ):
-                                sendFrendRequestVal = True
+
                             else:
-                                sendFrendRequestVal = False
-                        except Exception as ex:
-                            sendFrendRequestVal = False
+                                price: float = get.inventoryPrice(
+                                    steemId=userInfo["steam_id_64"],
+                                    data=data,
+                                    proxy=None,
+                                )
+
+                            if (int(filtres["price"]["from"])
+                                    <= int(price)
+                                    <= int(filtres["price"]["to"])):
+                                sendFrendRequestVal: bool = True
+
+                            else:
+                                sendFrendRequestVal: bool = False
+
+                        except Exception:
+                            sendFrendRequestVal: bool = False
+
                 steam_id = userInfo["steam_id_64"]
                 level = userInfo["games"]["csgo"]["skill_level"]
+
                 if sendFrendRequestVal:
-                    if proxy == None:
-                        send.friendRequest(clientToken, meId, userInfo["player_id"])
+                    if proxy:
+                        send.friendRequest(
+                            token=clientToken,
+                            facitIdSending=meId,
+                            facitIdReceiving=userInfo["player_id"],
+                            proxy=proxy,
+                        )
                     else:
                         send.friendRequest(
-                            clientToken, meId, userInfo["player_id"], proxy
+                            token=clientToken,
+                            facitIdSending=meId,
+                            facitIdReceiving=userInfo["player_id"],
+                            proxy=None,
                         )
+
                     print(f"{steam_id} {level} {price} request sent")
-                    steam_ids.put(userInfo["steam_id_64"])
+                    return steam_ids.put(userInfo["steam_id_64"])
+
                 else:
-                    print(f"{steam_id} {level} {price}")
+                    return print(f"{steam_id} {level} {price}")
         except:
-            players.put(player)
+            return players.put(player)

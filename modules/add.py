@@ -2,19 +2,16 @@ from datetime import datetime
 import get
 
 
-def clientToken(token):
-    f = open("tokens_site.txt", "a")
-    nickname = get.me(token)["payload"]["nickname"]
-    now = datetime.now()
-    f.write(f"\n{token} {nickname} {now}")
-    print(f"{token} {nickname} {now} - добавлен")
-    f.close()
+def token(token: str, client_token: str) -> None:
+    nickname: dict = get.me(token)["payload"]["nickname"]
+    now: float = datetime.now()
 
-
-def serverToken(token, clientToken):
-    f = open("tokens_server.txt", "a")
-    nickname = get.me(clientToken)["payload"]["nickname"]
-    now = datetime.now()
-    f.write(f"{token} {nickname} {now}\n")
-    print(f"{token} {nickname} {now} - добавлен")
-    f.close()
+    if token and not client_token:
+        with open("tokens_site.txt", "a") as file:
+            file.write(f"{token} {nickname} {now}\n")
+        return print(f"{token} {nickname} {now} - добавлен")
+    
+    if token and client_token:
+        with open("tokens_server.txt", "a") as file:
+            file.write(f"{token} {nickname} {now}\n")
+        return print(f"{token} {nickname} {now} - добавлен")

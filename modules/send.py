@@ -1,11 +1,15 @@
 import requests
-import json
 
-def friendRequest(token, facitIdSending, facitIdReceiving, proxy=None):
-    if proxy == None:
-        r = requests.post(
-            f"https://api.faceit.com/friend-requests/v1/" \
+
+def friendRequest(
+        token: str, facitIdSending: str,
+        facitIdReceiving: str, proxy: None) -> None:
+    if proxy:
+        proxies_url = {"https": proxy}
+        return requests.post(
+            url=f"https://api.faceit.com/friend-requests/v1/"
                 f"users/{facitIdSending}/requests",
+            proxies=proxies_url,
             headers={
                 "authorization": token
             },
@@ -15,11 +19,9 @@ def friendRequest(token, facitIdSending, facitIdReceiving, proxy=None):
             },
         )
     else:
-        proxies = {"https": proxy}
-        r = requests.post(
-            f"https://api.faceit.com/friend-requests/v1/" \
-            f"users/{facitIdSending}/requests",
-            proxies=proxies,
+        return requests.post(
+            url=f"https://api.faceit.com/friend-requests/v1/"
+                f"users/{facitIdSending}/requests",
             headers={
                 "authorization": token
             },
