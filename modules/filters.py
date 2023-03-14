@@ -1,14 +1,7 @@
 import get
 
+filtres = {"level": {"work": False}, "price": {"work": False}}
 
-filtres = {
-    "level": {
-        "work": False,
-    },
-    "price": {
-        "work": False
-    },
-}
 
 def startFiltresInputs() -> None:
     val_from = filtres["level"]["from"]
@@ -20,7 +13,9 @@ def startFiltresInputs() -> None:
         print("1 - фильтрация по уровню")
 
     if filtres["price"]["work"]:
-        print(f"2 - фильтрация по стоимости (от {val_from} до {val_to})")
+        print(
+            f"2 - фильтрация по стоимости (от {val_from} до {val_to})"
+        )
     else:
         print("2 - фильтрация по стоимости")
 

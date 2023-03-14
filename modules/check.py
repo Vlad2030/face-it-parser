@@ -3,9 +3,16 @@ import send
 
 
 def user(
-        players: dict, serverToken: str,
-        clientToken: str, steam_ids: list, filtres: dict,
-        meId: str, blacklist: bool, data: dict, proxy: str) -> None:
+    players: dict,
+    serverToken: str,
+    clientToken: str,
+    steam_ids: list,
+    filtres: dict,
+    meId: str,
+    blacklist: bool,
+    data: dict,
+    proxy: str,
+) -> None:
 
     price: float = 0.00
 
@@ -15,27 +22,27 @@ def user(
         try:
             if proxy:
                 userInfo: dict = get.userInfo(
-                    token=serverToken,
-                    facitId=player["id"],
-                    proxy=proxy
+                    token=serverToken, facitId=player["id"], proxy=proxy
                 )
             else:
                 userInfo: dict = get.userInfo(
-                    token=serverToken, 
-                    facitId=player["id"], 
-                    proxy=proxy,
+                    token=serverToken, facitId=player["id"], proxy=proxy
                 )
 
             if userInfo["steam_id_64"] not in blacklist:
                 sendFrendRequestVal: bool = False
-                if (not filtres["price"]["work"]
-                        and not filtres["level"]["work"]):
+                if (
+                    not filtres["price"]["work"]
+                    and not filtres["level"]["work"]
+                ):
                     sendFrendRequestVal: bool = True
 
                 if filtres["level"]["work"]:
-                    if (int(filtres["level"]["from"])
-                            <= int(userInfo["games"]["csgo"]["skill_level"])
-                            <= int(filtres["level"]["to"])):
+                    if (
+                        int(filtres["level"]["from"])
+                        <= int(userInfo["games"]["csgo"]["skill_level"])
+                        <= int(filtres["level"]["to"])
+                    ):
                         sendFrendRequestVal: bool = True
 
                 if filtres["price"]["work"]:
@@ -55,9 +62,11 @@ def user(
                                         proxy=None,
                                     )
 
-                                if (int(filtres["price"]["from"])
-                                        <= int(price)
-                                        <= int(filtres["price"]["to"])):
+                                if (
+                                    int(filtres["price"]["from"])
+                                    <= int(price)
+                                    <= int(filtres["price"]["to"])
+                                ):
                                     sendFrendRequestVal: bool = True
                                 else:
                                     sendFrendRequestVal: bool = False
@@ -81,9 +90,11 @@ def user(
                                     proxy=None,
                                 )
 
-                            if (int(filtres["price"]["from"])
-                                    <= int(price)
-                                    <= int(filtres["price"]["to"])):
+                            if (
+                                int(filtres["price"]["from"])
+                                <= int(price)
+                                <= int(filtres["price"]["to"])
+                            ):
                                 sendFrendRequestVal: bool = True
 
                             else:

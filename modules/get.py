@@ -1,7 +1,6 @@
-from environs import Env
-import requests
 import filters
-
+import requests
+from environs import Env
 
 env = Env()
 env.read_env()
@@ -11,8 +10,8 @@ api_key: str = env.list('API_KEY')
 def itemsPrice(proxy=None) -> dict:
     with requests.get(
         url=f"https://api.steamapis.com/market/items/"
-            f"730?api_key={api_key}"
-        ) as r:
+        f"730?api_key={api_key}"
+    ) as r:
         items: dict = {}
         for item in r.json()["data"]:
             items[item["market_hash_name"]] = item["prices"]["avg"]
@@ -22,9 +21,7 @@ def itemsPrice(proxy=None) -> dict:
 def me(token: str) -> dict:
     with requests.get(
         "https://api.faceit.com/users/v1/sessions/me",
-        headers={
-            "authorization": token,
-        },
+        headers={"authorization": token},
     ) as r:
         return r.json()
 
@@ -32,12 +29,10 @@ def me(token: str) -> dict:
 def matches(token: str, offset: float, region: str) -> dict:
     with requests.get(
         url="https://api.faceit.com/match/v1/matches/list?"
-            "state=SUBSTITUTION&state=CAPTAIN_PICK&state=VOTING&"
-            "state=CONFIGURING&state=READY&state=ONGOING&"
-            "state=MANUAL_RESULT&state=PAUSED&state=ABORTED",
-        headers={
-            "authorization": token
-        },
+        "state=SUBSTITUTION&state=CAPTAIN_PICK&state=VOTING&"
+        "state=CONFIGURING&state=READY&state=ONGOING&"
+        "state=MANUAL_RESULT&state=PAUSED&state=ABORTED",
+        headers={"authorization": token},
         params={
             "game": "csgo",
             "region": region,
@@ -56,14 +51,14 @@ def inventoryPrice(steemId: str, data: dict, proxy: str) -> float:
     if proxy:
         r: requests.Response = requests.get(
             url=f"https://api.steamapis.com/steam/inventory/{steemId}"
-                f"/730/2?api_key={api_key}",
+            f"/730/2?api_key={api_key}",
             proxies=proxies,
         )
         rj: dict = r.json()
     else:
         r: requests.Response = requests.get(
             url=f"https://api.steamapis.com/steam/inventory/"
-                f"{steemId}/730/2?api_key={api_key}",
+            f"{steemId}/730/2?api_key={api_key}"
         )
         rj: dict = r.json()
 
